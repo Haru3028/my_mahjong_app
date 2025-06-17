@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hand_data: 
+  score: 1
+  yaku_name: MyString
+  date: 2025-06-18
+  round_info: MyString
+
+two:
+  hand_data: 
+  score: 1
+  yaku_name: MyString
+  date: 2025-06-18
+  round_info: MyString

@@ -1,0 +1,2 @@
+class MyHand < ApplicationRecord
+end

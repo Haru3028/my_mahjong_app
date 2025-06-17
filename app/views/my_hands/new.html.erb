@@ -1,0 +1,51 @@
+<%# app/views/my_hands/new.html.erb %>
+<h1>新しい手牌を記録</h1>
+
+<%= form_with(model: @my_hand, local: true) do |form| %>
+  <% if @my_hand.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@my_hand.errors.count, "error") %> この手牌記録は保存できません:</h2>
+      <ul>
+        <% @my_hand.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div style="margin-bottom: 15px;">
+    <%= form.label :date, '記録日' %>
+    <%= form.date_field :date %>
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <%= form.label :round_info, '局情報（例: 東1局 親）' %>
+    <%= form.text_field :round_info %>
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <%= form.label :score, '点数' %>
+    <%= form.number_field :score %>
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <%= form.label :yaku_name, '役名（例: リーチ, タンヤオ）' %>
+    <%= form.text_field :yaku_name %>
+  </div>
+
+  <h2 style="margin-top: 30px;">手牌データ入力</h2>
+  <%# ここに選択式のUIを実装していきます。まずはテキスト入力で確認 %>
+  <%# 牌の種類と枚数を入力するフィールド群（例: 1m:2, 5p:3 など） %>
+  <div id="hand_input_area">
+    <p>以下に手牌データをJSON形式で直接入力してください。（例: {"man":{"1":2},"pin":{"5":3},"sou":{},"ji":{}}）</p>
+    <%= form.text_area :hand_data, rows: 5, style: "width: 80%;" %>
+    <%# 実際はここに視覚的な牌選択UIが入り、その結果をJavaScriptで下の隠しフィールドにセットします %>
+    <%# <%= form.hidden_field :hand_data, id: 'actual_hand_data_json' %>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <%= form.submit '手牌を記録', style: "padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;" %>
+  </div>
+<% end %>
+
+<%= link_to '一覧に戻る', my_hands_path, style: "display: block; margin-top: 20px; color: blue; text-decoration: none;" %>
