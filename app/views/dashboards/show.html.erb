@@ -1,0 +1,23 @@
+<%# app/views/dashboards/show.html.erb %>
+
+<div style="text-align: center; padding: 50px 20px; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <h1 style="color: #333; margin-bottom: 40px; font-size: 2.5em;">麻雀アプリへようこそ！</h1>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+    <%# 点数計算へのリンク（もし別のコントローラーとビューが必要なら） %>
+    <%# 現在の構造ではmy_hands/newが手牌入力なので、これを点数計算とみなすことも可能 %>
+    <%= link_to '新しい手牌を記録 / 点数計算', new_my_hand_path,
+        style: "display: block; width: 300px; padding: 15px 25px; background-color: #007bff; color: white; text-decoration: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; transition: background-color 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" %>
+    <p style="color: #666; margin-top: 5px; font-size: 0.9em;">新しい手牌を入力して点数を計算します。</p>
+
+    <%# 過去の計算履歴（my_hands一覧）へのリンク %>
+    <%= link_to '過去の記録を見る', my_hands_path,
+        style: "display: block; width: 300px; padding: 15px 25px; background-color: #28a745; color: white; text-decoration: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; transition: background-color 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" %>
+    <p style="color: #666; margin-top: 5px; font-size: 0.9em;">これまでの手牌記録や点数を一覧で確認します。</p>
+
+    <%# 何切る問題へのリンク（将来の機能として） %>
+    <%= link_to '何切る問題に挑戦', '#', # 仮のリンク。後で実際のパスに変更
+        style: "display: block; width: 300px; padding: 15px 25px; background-color: #ffc107; color: #333; text-decoration: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; transition: background-color 0.2s ease-in-out; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" %>
+    <p style="color: #666; margin-top: 5px; font-size: 0.9em;">麻雀の思考力を鍛える問題に挑戦します。（開発中）</p>
+  </div>
+</div>

@@ -1,10 +1,9 @@
-<%# app/views/my_hands/new.html.erb %>
 <h1>新しい手牌を記録</h1>
 
 <%= form_with(model: @my_hand, local: true) do |form| %>
   <% if @my_hand.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@my_hand.errors.count, "error") %> この手牌記録は保存できません:</h2>
+    <div id="error_explanation" style="color: red; margin-bottom: 20px; border: 1px solid red; padding: 10px; background-color: #ffe0e0; border-radius: 5px;">
+      <h2 style="color: red; margin-top: 0;">手牌記録の保存中に <%= pluralize(@my_hand.errors.count, "エラー") %> が発生しました:</h2>
       <ul>
         <% @my_hand.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -14,38 +13,138 @@
   <% end %>
 
   <div style="margin-bottom: 15px;">
-    <%= form.label :date, '記録日' %>
-    <%= form.date_field :date %>
+    <%= form.label :date, '記録日' %><br>
+    <%= form.date_field :date, style: "padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 200px;" %>
   </div>
 
   <div style="margin-bottom: 15px;">
-    <%= form.label :round_info, '局情報（例: 東1局 親）' %>
-    <%= form.text_field :round_info %>
+    <%= form.label :round_info, '局情報（例: 東1局 親）' %><br>
+    <%= form.text_field :round_info, style: "width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" %>
   </div>
 
   <div style="margin-bottom: 15px;">
-    <%= form.label :score, '点数' %>
-    <%= form.number_field :score %>
+    <%= form.label :score, '点数' %><br>
+    <%= form.number_field :score, style: "width: 150px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" %>
   </div>
 
   <div style="margin-bottom: 15px;">
-    <%= form.label :yaku_name, '役名（例: リーチ, タンヤオ）' %>
-    <%= form.text_field :yaku_name %>
+    <%= form.label :yaku_name, '役名（例: リーチ, タンヤオ）' %><br>
+    <%= form.text_field :yaku_name, style: "width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" %>
   </div>
 
-  <h2 style="margin-top: 30px;">手牌データ入力</h2>
-  <%# ここに選択式のUIを実装していきます。まずはテキスト入力で確認 %>
-  <%# 牌の種類と枚数を入力するフィールド群（例: 1m:2, 5p:3 など） %>
-  <div id="hand_input_area">
-    <p>以下に手牌データをJSON形式で直接入力してください。（例: {"man":{"1":2},"pin":{"5":3},"sou":{},"ji":{}}）</p>
-    <%= form.text_area :hand_data, rows: 5, style: "width: 80%;" %>
-    <%# 実際はここに視覚的な牌選択UIが入り、その結果をJavaScriptで下の隠しフィールドにセットします %>
-    <%# <%= form.hidden_field :hand_data, id: 'actual_hand_data_json' %>
+  <h2 style="margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px;">手牌データ入力</h2>
+  <div id="mahjong_tiles_selection_area" data-controller="mahjong-hand-input" style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background-color: #f9f9f9;">
+    <p style="font-weight: bold; font-size: 1.1em; margin-bottom: 15px;">
+      現在の手牌枚数: <span data-mahjong-hand-input-target="totalTilesCount" style="color: blue;">0</span>/14
+    </p>
+
+    <%# 萬子 %>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <h3 style="margin-top: 0; color: #333;">萬子</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;">
+        <% (1..9).each do |i| %>
+          <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+            <%# 通常の萬子 %>
+            <img src="<%= asset_path("man#{i}.png") %>" alt="萬子<%= i %>" width="47" height="63"
+                 data-action="click->mahjong-hand-input#toggleTile"
+                 data-mahjong-hand-input-suit="man" data-mahjong-hand-input-value="<%= i %>"
+                 style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+            <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="man<%= i %>" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+          </div>
+          <%# 赤五萬 (5の牌の場合のみ追加) %>
+          <% if i == 5 %>
+            <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+              <img src="<%= asset_path("man5_red.png") %>" alt="赤五萬" width="47" height="63"
+                   data-action="click->mahjong-hand-input#toggleTile"
+                   data-mahjong-hand-input-suit="man_red" data-mahjong-hand-input-value="5"
+                   style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+              <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="man_red5" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 筒子 %>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <h3 style="margin-top: 0; color: #333;">筒子</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;">
+        <% (1..9).each do |i| %>
+          <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+            <%# 通常の筒子 %>
+            <img src="<%= asset_path("pin#{i}.png") %>" alt="筒子<%= i %>" width="47" height="63"
+                 data-action="click->mahjong-hand-input#toggleTile"
+                 data-mahjong-hand-input-suit="pin" data-mahjong-hand-input-value="<%= i %>"
+                 style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+            <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="pin<%= i %>" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+          </div>
+          <%# 赤五筒 (5の牌の場合のみ追加) %>
+          <% if i == 5 %>
+            <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+              <img src="<%= asset_path("pin5_red.png") %>" alt="赤五筒" width="47" height="63"
+                   data-action="click->mahjong-hand-input#toggleTile"
+                   data-mahjong-hand-input-suit="pin_red" data-mahjong-hand-input-value="5"
+                   style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+              <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="pin_red5" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 索子 %>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <h3 style="margin-top: 0; color: #333;">索子</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;">
+        <% (1..9).each do |i| %>
+          <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+            <%# 通常の索子 %>
+            <img src="<%= asset_path("sou#{i}.png") %>" alt="索子<%= i %>" width="47" height="63"
+                 data-action="click->mahjong-hand-input#toggleTile"
+                 data-mahjong-hand-input-suit="sou" data-mahjong-hand-input-value="<%= i %>"
+                 style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+            <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="sou<%= i %>" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+          </div>
+          <%# 赤五索 (5の牌の場合のみ追加) %>
+          <% if i == 5 %>
+            <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+              <img src="<%= asset_path("sou5_red.png") %>" alt="赤五索" width="47" height="63"
+                   data-action="click->mahjong-hand-input#toggleTile"
+                   data-mahjong-hand-input-suit="sou_red" data-mahjong-hand-input-value="5"
+                   style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+              <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="sou_red5" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 字牌 %>
+    <div style="margin-bottom: 20px; padding: 10px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+      <h3 style="margin-top: 0; color: #333;">字牌</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start;">
+        <% ji_tiles = { 'ton' => '東', 'nan' => '南', 'shaa' => '西', 'pei' => '北', 'haku' => '白', 'hatsu' => '發', 'chun' => '中' } %>
+        <% ji_tiles.each do |key, name| %>
+          <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+            <img src="<%= asset_path("ji_#{key}.png") %>" alt="<%= name %>" width="47" height="63"
+                 data-action="click->mahjong-hand-input#toggleTile"
+                 data-mahjong-hand-input-suit="ji" data-mahjong-hand-input-value="<%= key %>"
+                 style="cursor: pointer; border: 1px solid transparent; vertical-align: middle; border-radius: 3px; transition: border 0.1s ease-in-out;">
+            <span data-mahjong-hand-input-target="tileCount" data-mahjong-hand-input-tile-key="ji<%= key %>" style="width: 47px; text-align: center; font-weight: bold; margin-top: 2px;">0</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 最終的にJSONを格納する隠しフィールド %>
+    <%= form.hidden_field :hand_data, data: { mahjong_hand_input_target: 'handDataJson' } %>
   </div>
 
-  <div style="margin-top: 20px;">
-    <%= form.submit '手牌を記録', style: "padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer;" %>
+  <div style="margin-top: 30px; text-align: center;">
+    <%= form.submit '手牌を記録', style: "padding: 12px 30px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s ease-in-out;" %>
   </div>
 <% end %>
 
-<%= link_to '一覧に戻る', my_hands_path, style: "display: block; margin-top: 20px; color: blue; text-decoration: none;" %>
+<div style="text-align: center; margin-top: 25px;">
+  <%= link_to '一覧に戻る', my_hands_path, style: "color: #007bff; text-decoration: none; font-size: 0.9em; padding: 10px 15px; border: 1px solid #007bff; border-radius: 5px; transition: background-color 0.2s, color 0.2s;" %>
+</div>
