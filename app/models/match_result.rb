@@ -1,2 +1,0 @@
-class MatchResult < ApplicationRecord
-end

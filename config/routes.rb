@@ -1,11 +1,9 @@
 # config/routes.rb
 
 Rails.application.routes.draw do
+  resources :score_calculators
   # ダッシュボードをルートパスに設定
   root 'dashboards#show'
-
-  # my_hands の既存ルーティング
-  resources :my_hands
 
   # 他に必要なルーティングがあれば追加
   # get 'mahjong_calculator', to: 'calculators#new' # 例: 点数計算ページ
